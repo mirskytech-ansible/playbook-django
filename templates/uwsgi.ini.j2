@@ -1,0 +1,15 @@
+[uwsgi]
+vhost = true
+master = true
+enable-threads = true
+processes = 2
+wsgi-file = /srv/www/{{ project }}/webapp/wsgi.py
+virtualenv = /srv/env/{{ project }}
+
+chdir = /srv/www/{{ project }}
+touch-reload = /srv/reload/{{ project }}
+
+pythonpath = /srv/www/{{ project }}
+
+daemonize = /var/log/{{ project }}.log
+post-buffering = 32768

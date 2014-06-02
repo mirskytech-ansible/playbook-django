@@ -1,13 +1,82 @@
 ---
-## file: myplaybook.yml
+## file: mysite.yml
 
-## usage: ansible-playbook -i <inventory file> myplaybook.yml
+## usage: ansible-playbook -i <inventory file> mysite.yml
 
-# - hosts: production1
-#  roles:
-#    - roleA
-#    - roleB
-#  tasks:
-#    - name: taskA
-#      file: path=~/helloworld.txt state=touch
+ - hosts: webserver
+ 
+   vars:
+    - repo: git@github.com/owner/repo.git
+    - project: myproject
+    - databases:
+      { user: myproject_admin, database: myproject_db }
+    - domain: myserver.example.com
+ 
+ 
+   roles:
+    - { role: mirskytech-ansible.role-postgres }
+    - { role: mirskytech-ansible.role-cherokee }
+    
+  tasks:
+  - name: install uwsgi & postgres interface globally
+    sudo: yes
+    pip: name="uwsgi psycopg2"
+    
+  - name: install system packages
+    sudo: yes
+    apt: pkg="{{ item }}" state="present" update_cache="yes"
+    with_items:
+      - htop
+      - python-setuptools
+      - git-core
+      - gcc
+      - libpq-dev
+      - python-pip
+      - python-virtualenv
+      - python-dev
+      
+  - name: create virtualenv
+    sudo: yes
+    pip: name="pip" virtualenv=/srv/env/"{{ project }}"
+      
+  - name: create directories, set ownership
+    sudo: yes
+    file: {{ item }} group='www-data'
+    with_items:
+
+      - path=/srv/env state=directory
+      - path=/srv/env/{{ project }} group='www-data' recurse=yes state=directory
+      
+      - path=/srv/www state=directory
+      - path=/srv/www/{{ project }} state=directory mode=770     
+      
+      - path=/var/log/{{ project }}.log mode=660 state=touch
+      - path=/srv/reload state=directory
+      - path=/srv/reload/{{ project }} mode=660 state=touch
+      
+  - name: checkout code base
+    git: repo="{{ repo }}"
+          dest=/srv/www/{{ project }}
+          version=master
+    
+  - name: create uwsgi.ini
+    sudo: yes
+    template: >
+        src=templates/uwsgi.ini.j2
+        dest=/srv/www/{{ project }}/uwsgi.ini
+        group='www-data'
+        mode=660
+        
+  - name: create server configuration
+    sudo: yes
+    template: >
+        src=templates/cherokee.conf.j2
+        dest=/etc/cherokee/cherokee.conf
+        group='www-data'
+        mode=660
+        
+  - name: load new server configuration
+    sudo: yes
+    service: name=cherokee state=restarted
+    
     
