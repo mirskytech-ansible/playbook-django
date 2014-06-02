@@ -1,0 +1,2 @@
+git+ssh://github.com/mirskytech-ansible/role-cherokee.git@35b52d948543cb96d5a9c7a5f81ca72cb15c8e42
+git+ssh://github.com/mirskytech-ansible/role-postgres.git@3612f33dc7466e92cb34c52b6bce01196e947689
