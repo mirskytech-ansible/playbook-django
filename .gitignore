@@ -1,0 +1,5 @@
+.cache
+.installed_roles
+.installed_modules
+
+*.pyc
