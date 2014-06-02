@@ -1,7 +1,7 @@
 Playbook Name
 ========
 
-A brief description of the playbook goes here.
+Install cherokee webserver, uwsgi and postgres. Configure and deploy django application.
 
 Requirements
 ------------
@@ -11,19 +11,43 @@ Any pre-requisites that may not be covered within the playbook.
 Variables
 -------------
 
-A description of the settable variables for this playbook should go here, so that if this playbook is included in another playbook.
+The playbook sets these variables which can be overriden on the command line::
 
+
+   vars:
+
+    - repo: git@github.com/owner/repo.git
+
+    - project: myproject
+
+    - databases:
+      { user: myproject_admin, database: myproject_db }
+
+    - domain: myserver.example.com
+    
+    
+    
+    
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+These are already included in the playbook and will be installed automatically:
+
+- https://github.com/mirskytech-ansible/role-cherokee
+
+- https://github.com/mirskytech-ansible/role-postgres
+
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the playbook author(s) to include contact information, or a website (HTML is not allowed).
+Andrew Mirsky
+
+June 2, 2014
+
+http://mirskytech.com
